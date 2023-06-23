@@ -2,6 +2,8 @@
 
 Source code of the o²S²PARC Service for k-Wave, A MATLAB toolbox for the time-domain simulation of acoustic wave fields. It uses the kspaceFirst3DG function to run 3D time-domain simulation of wave propagation on a GPU using C++ CUDA code. Find more information about k-Wave [here](http://www.k-wave.org/index.php).
 
+It runs the kspaceFirstOrder-CUDA function (v1.3)
+
 ## Usage
 
 ```console
