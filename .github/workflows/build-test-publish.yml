@@ -43,8 +43,10 @@ jobs:
       - if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         name: Event is push to main
         run: |
-          echo "DOCKER_IMAGE_TAG=$(cat VERSION)" >> $GITHUB_ENV
           ./.github/dockerhub_login.bash
+          DOCKER_IMAGE_TAG=$(< VERSION)
+          echo "Docker image tag is ${DOCKER_IMAGE_TAG}"
+          make tag-version
           make push
       - if: github.event_name == 'push' && ${{ github.event.pull_request.merged }}
         name: Event is PR is merged
@@ -54,8 +56,3 @@ jobs:
           echo "Docker image tag is ${DOCKER_IMAGE_TAG}"
           make tag-version
           make push
-      # - if: github.event_name == 'push' && github.ref != 'refs/heads/main'
-      #   name: push
-      #   run: |
-      #     ./.github/dockerhub_login.bash
-      #     make push-version
