@@ -9,7 +9,8 @@ env:
   DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-
+  KWAVE_LOGIN: ${{ secrets.KWAVE_LOGIN }}
+  KWAVE_PASSWORD: ${{ secrets.KWAVE_PASSWORD }}
 jobs:
   build:
     name: building k-wave
