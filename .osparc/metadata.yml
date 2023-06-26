@@ -3,7 +3,7 @@ key: simcore/services/comp/k-wave
 type: computational
 integration-version: 1.0.0
 version: 1.0.0
-description: A MATLAB toolbox for the time-domain simulation of acoustic wave fields. It uses the kspaceFirst3DG function to run 3D time-domain simulation of wave propagation on a GPU using C++ CUDA code.
+description: k-Wave is a MATLAB toolbox for the time-domain simulation of acoustic wave fields. This service uses the kspaceFirstOrder-CUDA function to run 3D time-domain simulation of wave propagation on a GPU using C++ CUDA code (k-Wave version 1.3). <br><br> Have an issue? Create one at https://github.com/ITISFoundation/k-wave/issues 
 contact: iavarone@itis.swiss
 thumbnail: https://pbs.twimg.com/media/ER4wiXEWkAAY-GD.jpg
 authors:
@@ -13,19 +13,128 @@ authors:
 inputs:
   input_1:
     displayOrder: 1
-    label: input_1_label
-    description: The input 1 description
-    type: string
-    defaultValue: some_value(optional)
+    label: Input HDF5
+    description: Compatible HDF5 file (check [k-Wave User Manual](http://www.k-wave.org/manual/k-wave_user_manual_1.1.pdf) to know how to create it.)
+    type: data:*/*
     fileToKeyMap:
-      somefilename.ext: input_1
-  
+      input.h5: input_1
+  input_2:
+    displayOrder: 2
+    label: Compression level
+    description: Compression level (-c)
+    defaultValue: 0
+    type: ref_contentSchema
+    contentSchema: 
+      title: Compression level
+      type: integer
+      minimum: 0
+      maximum: 9
+  input_3:
+    displayOrder: 3
+    label: Store p_rms
+    description: Store rms of p (acoustic pressure)
+    type: boolean
+    defaultValue: false
+  input_4:
+    displayOrder: 4
+    label: Store p_max
+    description: Store max of p (acoustic pressure)
+    type: boolean
+    defaultValue: false
+  input_5:
+    displayOrder: 5
+    label: Store p_min
+    description: Store min of p (acoustic pressure)
+    type: boolean
+    defaultValue: false
+  input_6:
+    displayOrder: 6
+    label: Store p_max_all
+    description: Store max of p (whole domain)
+    type: boolean
+    defaultValue: false
+  input_7:
+    displayOrder: 7
+    label: Store p_min_all
+    description: Store min of p (acoustic pressure)
+    type: boolean
+    defaultValue: false
+  input_8:
+    displayOrder: 8
+    label: Store p_final
+    description: Store final pressure field
+    type: boolean
+    defaultValue: false
+  input_9:
+    displayOrder: 9
+    label: Store u
+    description: Store ux, uy, uz
+    type: boolean
+    defaultValue: false
+  input_10:
+    displayOrder: 10
+    label: Store u_non_staggered_raw
+    description: Store non-staggered raw time series of ux, uy, uz
+    type: boolean
+    defaultValue: false
+  input_11:
+    displayOrder: 11
+    label: Store u_rms
+    description: Store rms of ux, uy, uz
+    type: boolean
+    defaultValue: false
+  input_12:
+    displayOrder: 12
+    label: Store u_max
+    description: Store max of ux, uy, uz
+    type: boolean
+    defaultValue: false
+  input_13:
+    displayOrder: 13
+    label: Store u_min
+    description: Store min of ux, uy, uz
+    type: boolean
+    defaultValue: false
+  input_14:
+    displayOrder: 14
+    label: Store u_max_all
+    description: Store max of ux, uy, uz (whole domain)
+    type: boolean
+    defaultValue: false
+  input_15:
+    displayOrder: 15
+    label: Store u_min_all
+    description: Store min of ux, uy, uz (whole domain)
+    type: boolean
+    defaultValue: false
+  input_16:
+    displayOrder: 16
+    label: Store u_final
+    description: Store final acoustic velocity
+    type: boolean
+    defaultValue: false
+  input_17:
+    displayOrder: 17
+    label: Start of data collection
+    description: Time step when data collection begins (-s)
+    defaultValue: 1
+    type: ref_contentSchema
+    contentSchema: 
+      title: Start of data collection
+      type: integer
+  input_18:
+    displayOrder: 18
+    label: Copy sensory mask
+    description: Copy sensor mask to the output file
+    type: boolean
+    defaultValue: fals
+
 outputs:
   output_1:
     displayOrder: 1
-    label: output_1_label
-    description: The input 1 description
-    type: string
+    label: Output HDF5 file
+    description: HDF5 that can be read by k-wave (check [k-Wave documentation](http://www.k-wave.org/documentation/example_cpp_running_simulations.php#heading6))
+    type: data:*/*
     fileToKeyMap:
-      somefilename.ext: output_1
+      output.h5: output_1
   

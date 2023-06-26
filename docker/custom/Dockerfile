@@ -1,4 +1,4 @@
-FROM ubuntu:latest as base 
+FROM nvidia/cudagl:11.2.2-runtime-ubuntu20.04 as base
 #
 #  USAGE:
 #     cd services/k-wave
@@ -28,28 +28,39 @@ FROM base as build
 
 ENV SC_BUILD_TARGET build
 
+ARG KWAVE_PASSWORD
+ARG KWAVE_LOGIN
 # ------------------------------------------------------------------------------------
-#TODO:
-# uncomment and adapt if build dependencies shall be installed
-#RUN apt-get update \
-# && apt-get -y install --no-install-recommends \
-# gcc \
-# git \
-# && rm -rf /var/lib/apt/lists/*
+# build dependencies shall be installed
+RUN apt-get update \
+ && apt-get -y install --no-install-recommends \
+ unzip \
+ gcc \
+ curl \
+&& rm -rf /var/lib/apt/lists/*
 
-# uncomment and adapt if python necessary
-#RUN $SC_PIP install --upgrade pip wheel setuptools
 # ------------------------------------------------------------------------------------
+# Download binaries (get authentication cookie to login to http://www.k-wave.org/download.php and download the file with the cookie)
+# Note, you need to have a valid login and export credentials as env. variables
 
 WORKDIR /build
+
+
+RUN curl --cookie-jar cookie.txt --form password=$KWAVE_PASSWORD --form user_login=$KWAVE_LOGIN http://www.k-wave.org/forum/bb-login.php && \
+ curl -L -b cookie.txt http://www.k-wave.org/getfile.php?id=117 -o kwave.zip && \
+  unzip kwave.zip && \
+  rm kwave.zip cookie.txt
+# ------------------------------------------------------------------------------------
+
+
 # defines the output of the build
 RUN mkdir --parents /build/bin
-# copy src code
-COPY --chown=${SC_USER_NAME}:${SC_USER_NAME} src/k_wave src/k_wave
+# copy src code: There's none for the moment
+#COPY --chown=${SC_USER_NAME}:${SC_USER_NAME} src/k_wave src/k_wave
 # ------------------------------------------------------------------------------------
 #TODO:
-# uncomment and adapt if build steps are necessary
-# RUN cp -R src/k_wave/* /build/bin
+# uncomment and adapt if build steps are necessary. For now, we use the compiled executable
+RUN cp -R /build/kspaceFirstOrder-CUDA /build/bin
 # ------------------------------------------------------------------------------------
 
 # --------------------------Production stage -------------------
@@ -74,11 +85,11 @@ ENV INPUT_FOLDER="/input" \
 WORKDIR /home/${SC_USER_NAME}
 
 # ------------------------------------------------------------------------------------
-#TODO:
 # uncomment and adapt to install runtime dependencies
-#RUN apt-get update \
-# && apt-get -y install --no-install-recommends \
-# && rm -rf /var/lib/apt/lists/*
+RUN apt-get update \
+ && apt-get -y install --no-install-recommends \
+    libgomp1 \
+ && rm -rf /var/lib/apt/lists/*
 # ------------------------------------------------------------------------------------
 
 # copy docker bootup scripts
@@ -90,16 +101,7 @@ ENV PATH="/home/${SC_USER_NAME}/service.cli:${PATH}"
 
 # copy binaries from build
 COPY --from=build --chown=${SC_USER_NAME}:${SC_USER_NAME} /build/bin k_wave
-
-# ------------------------------------------------------------------------------------
-#TODO:
-# uncomment and provide a healtchecker if possible
-# HEALTHCHECK --interval=30s \
-#             --timeout=120s \
-#             --start-period=30s \
-#             --retries=3 \
-#             CMD ["healthchecker app"]
-# ------------------------------------------------------------------------------------
+RUN chmod +x k_wave/*
 
 ENTRYPOINT [ "/bin/sh", "docker/entrypoint.sh", "/bin/sh", "-c" ]
 CMD ["run"]
