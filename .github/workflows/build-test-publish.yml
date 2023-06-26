@@ -37,16 +37,15 @@ jobs:
         run: make pull-latest || true
       - name: build
         run: |
-          make VERSION
           make build
           make info-build
       - if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         name: push
         run: |
           ./.github/dockerhub_login.bash
-          make push
+          make push-version
       - if: github.event_name == 'push' && github.ref != 'refs/heads/main'
         name: push
         run: |
           ./.github/dockerhub_login.bash
-          make push-version
+          make push
