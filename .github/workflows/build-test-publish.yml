@@ -37,20 +37,21 @@ jobs:
         run: make pull-latest || true
       - name: build
         run: |
-          make build
           make VERSION
+          make build
           make info-build
       - if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         name: Event is push to main
         run: |
-          ./.github/dockerhub_login.bash
           echo "DOCKER_IMAGE_TAG=$(cat VERSION)" >> $GITHUB_ENV
+          ./.github/dockerhub_login.bash
           make push
       - if: github.event_name == 'push' && ${{ github.event.pull_request.merged }}
         name: Event is PR is merged
         run: |
           ./.github/dockerhub_login.bash
           echo "DOCKER_IMAGE_TAG=$(cat VERSION)" >> $GITHUB_ENV
+          make tag-version
           make push
       # - if: github.event_name == 'push' && github.ref != 'refs/heads/main'
       #   name: push
