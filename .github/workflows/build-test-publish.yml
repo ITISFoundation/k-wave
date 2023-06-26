@@ -41,7 +41,13 @@ jobs:
           make VERSION
           make info-build
       - if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        name: push to registry (and main)
+        name: Event is push to main
+        run: |
+          ./.github/dockerhub_login.bash
+          echo "DOCKER_IMAGE_TAG=$(shell cat VERSION)" >> $GITHUB_ENV
+          make push
+      - if: github.event_name == 'push' && ${{ github.event.pull_request.merged }}
+        name: Event is PR is merged
         run: |
           ./.github/dockerhub_login.bash
           echo "DOCKER_IMAGE_TAG=$(shell cat VERSION)" >> $GITHUB_ENV
