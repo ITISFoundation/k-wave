@@ -13,15 +13,13 @@ echo "..."
 echo
 # ----------------------------------------------------------------
 # This script shall be modified according to the needs in order to run the service
-# The inputs defined in ${INPUT_FOLDER}/inputs.json are available as env variables by their key in capital letters
-# For example: input_1 -> $INPUT_1
-
 
 # From isolve: checking for resources limit env vars injected by osparc
 SIMCORE_NANO_CPUS_LIMIT="${SIMCORE_NANO_CPUS_LIMIT:-0}"
+echo "Setting/getting CPU limit gives this: ${SIMCORE_NANO_CPUS_LIMIT}"
 if [ "${SIMCORE_NANO_CPUS_LIMIT}" -ne "0" ]
 then
-    echo "$INFO" "Found NANO_CPU limits: ${SIMCORE_NANO_CPUS_LIMIT}"
+    echo "Found NANO_CPU limits: ${SIMCORE_NANO_CPUS_LIMIT}"
     NANO_CPU_DIVISOR=1000000000
     MAX_CPUS=$((${SIMCORE_NANO_CPUS_LIMIT} / ${NANO_CPU_DIVISOR}))
     # use 1 if this is 0 otherwise floor is probably fine
@@ -29,7 +27,7 @@ then
     then
         MAX_CPUS=1
     fi
-    echo "$INFO" "Setting Z43_MAX_CPU_RESOURCES to " "${MAX_CPUS}"
+    echo "Setting Z43_MAX_CPU_RESOURCES to " "${MAX_CPUS}"
     export Z43_MAX_CPU_RESOURCES="${MAX_CPUS}"
 else
     MAX_CPUS=1
@@ -45,52 +43,51 @@ args=(
 -s ${INPUT_17}
 --verbose 2
 )
-
+echo "Parsing input ports..."
 # Optional output flags: if checked in the UI -> input is true -> add flag
-if [ $INPUT_3 = "\"true\"" ]; then
+if [ $INPUT_3 = true ]; then
     args+=(--p_rms)
 fi
-if [ $INPUT_4 = "\"true\"" ]; then
+if [ $INPUT_4 = true ]; then
     args+=(--p_max)
 fi
-if [ $INPUT_5 = "\"true\"" ]; then
+if [ $INPUT_5 = true ]; then
     args+=(--p_min)
 fi
-if [ $INPUT_6 = "\"true\"" ]; then
+if [ $INPUT_6 = true ]; then
     args+=(--p_max_all)
 fi
-if [ $INPUT_7 = "\"true\"" ]; then
+if [ $INPUT_7 = true ]; then
     args+=(--p_min_all)
 fi
-if [ $INPUT_8 = "\"true\"" ]; then
+if [ $INPUT_8 = true ]; then
     args+=(--p_final)
 fi
-if [[ ${INPUT_9} == "\"true\"" ]]; then
-    echo "Adding u to args"
+if [ $INPUT_9 == true ]; then
     args+=(-u)
 fi
-if [ $INPUT_10 = "\"true\"" ]; then
+if [ $INPUT_10 = true ]; then
     args+=(--u_non_staggered_raw)
 fi
-if [ $INPUT_11 = "\"true\"" ]; then
+if [ $INPUT_11 = true ]; then
     args+=(--u_rms)
 fi
-if [ $INPUT_12 = "\"true\"" ]; then
+if [ $INPUT_12 = true ]; then
     args+=(--u_max)
 fi
-if [ $INPUT_13 = "\"true\"" ]; then
+if [ $INPUT_13 = true ]; then
     args+=(--u_min)
 fi
-if [ $INPUT_14 = "\"true\"" ]; then
+if [ $INPUT_14 = true ]; then
     args+=(--u_max_all)
 fi
-if [ $INPUT_15 = "\"true\"" ]; then
+if [ $INPUT_15 = true ]; then
     args+=(--u_min_all)
 fi
-if [ $INPUT_16 = "\"true\"" ]; then
+if [ $INPUT_16 = true ]; then
     args+=(--u_final)
 fi
-if [ $INPUT_18 = "\"true\"" ]; then
+if [ $INPUT_18 = true ]; then
     args+=(--copy_sensor_mask)
 fi
 
@@ -99,11 +96,5 @@ echo "Launching kspaceFirstOrder-CUDA with args ${args[@]}"
 
 # then retrieve the output and move it to the $OUTPUT_FOLDER
 # as defined in the output labels
-# For example: cp output.csv $OUTPUT_FOLDER or to $OUTPUT_FOLDER/outputs.json using jq
-#TODO: Replace following
-cat > "${OUTPUT_FOLDER}"/outputs.json << EOF
-{
-    "output_1":"some_stuff"
-}
-EOF
+# Output file is already in ${OUTPUT_FOLDER}/ (see -o argument)
 

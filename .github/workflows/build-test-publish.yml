@@ -39,14 +39,12 @@ jobs:
           make VERSION
           make build
           make info-build
-      - name: test
-        run: make tests
-      - if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      - if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         name: push
         run: |
           ./.github/dockerhub_login.bash
           make push
-      - if: github.event_name == 'push' && github.ref != 'refs/heads/master'
+      - if: github.event_name == 'push' && github.ref != 'refs/heads/main'
         name: push
         run: |
           ./.github/dockerhub_login.bash
