@@ -38,14 +38,16 @@ jobs:
       - name: build
         run: |
           make build
+          make VERSION
           make info-build
       - if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        name: push
+        name: push to registry (and main)
         run: |
           ./.github/dockerhub_login.bash
-          make push-version
-      - if: github.event_name == 'push' && github.ref != 'refs/heads/main'
-        name: push
-        run: |
-          ./.github/dockerhub_login.bash
+          echo "DOCKER_IMAGE_TAG=$(shell cat VERSION)" >> $GITHUB_ENV
           make push
+      # - if: github.event_name == 'push' && github.ref != 'refs/heads/main'
+      #   name: push
+      #   run: |
+      #     ./.github/dockerhub_login.bash
+      #     make push-version
