@@ -4,6 +4,3 @@ services:
     build:
       dockerfile: docker/custom/Dockerfile
       target: production
-      args: 
-        - KWAVE_LOGIN
-        - KWAVE_PASSWORD
